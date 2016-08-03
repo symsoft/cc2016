@@ -26,30 +26,46 @@ In order to run our microservice application demo we need an infrastructure stac
 1. First login to the AWS management console using your username and password. In order to do that you need to know the Symsoft's AWS account id (Ask someone how nows, if you don't know :-))). 
 You login [here](https://aws.amazon.com/)  
 
-2. Select the *CloudFormation* service
+2. Select the *EC2 Container Service*
 
-3. Click *Create Stack*
+3. Click *Create Cluster*
 
-4. Choose the option *Specify an Amazon S3 template URL* and enter the following URL:
-´´´´
+4. Give your ECS cluster a name and click *Create*
+
+5. Next we will create the infrastructure stack using Cloudformation. Select the *CloudFormation* service
+
+6. Click *Create Stack*
+
+7. Choose the option *Specify an Amazon S3 template URL* and enter the following URL:
+````
 https://s3-eu-west-1.amazonaws.com/codecamp2016/cf_appdemo_template.json
-´´´´
+````
 
-5. Enter stack parameters
+8. Enter stack parameters
    * Stack name: Use for example your name
    * ClusterName: Use same as for stack name
    * KeyName: Select *realtime*
    * TeamName: Use same as for stack name
 
-6. Click next and then next again
+9. Click next and then next again
 
-7. Tick the checkbox *I acknowledge that AWS CloudFormation might create IAM resources* and then click *Create*
+10. Tick the checkbox *I acknowledge that AWS CloudFormation might create IAM resources* and then click *Create*
 
-8. This will now take a while, so go grab some coffee.  
+11. This will now take a while, so go grab some coffee.  
 
    
 
 # Running the demo app #
+## Adapting the application AWS scripts ##
+The first thing we need to do is to adapt some JSON scripts so that application launches in the ECS cluster that we created earlier.
+
+1. Locate the file *customerservice/main/resources/aws-ecs/taskdefinition.json*. 
+Replace *<your_dockerhub_name>* with your DockerHub username and replace *<TeamName>* with the team name you entered when creating the infrastructure stack.
+
+2. Locate the file *customerservice/main/resources/aws-ecs/servicedefinition.json*. Replace *<TeamName>* with the team name you entered when creating the infrastructure stack.  
+
+3. Do the same thing for the files *orderservice/main/resources/aws-ecs/taskdefinition.json* and *orderservice/main/resources/aws-ecs/servicedefinition.json*
+
 ## Building and launching the Customer service ##
 1. Go to the customerservice module
 2. Build the artifact: 
@@ -64,6 +80,11 @@ $ docker build -t <your_dockerhub_name>/customerservice:1 .
 ````
 $ docker push <your_dockerhub_name>/customerservice:1
 ````
-5. aws ecs register-task-definition --cli-input-json file://taskdefinition.json
-6. aws ecs create-service --cluster Kalle --service-name CustomerService  --cli-input-json file://servicedefinition.json
-
+5. Register a task definition for the docker image in AWS ECS. Will we do this using the AWS CLI.
+````
+`$ aws ecs register-task-definition --cli-input-json file://main/src/resources/aws-ecs/taskdefinition.json
+````
+6. Create the service in AWS ECS 
+````
+aws ecs create-service --cluster <your_cluster_name> --service-name CustomerService  --cli-input-json file://main/src/resources/aws-ecs/servicedefinition.json
+````
