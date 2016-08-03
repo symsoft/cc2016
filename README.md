@@ -4,11 +4,11 @@ You need to have you AWS access key id and your AWS secret access key.
 These keys shall be stored in a filed named *credentials* located in the ~/.aws folder.
 The content of the file shall be as follows:
 
-`
+````
   [default]  
   aws_access_key_id = <your_access_key_id>  
   aws_secret_access_key = <your_secret_access_key>
-`
+````
 
 ## Install and configure Docker ##
 1. Install [Docker](https://docs.docker.com)
