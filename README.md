@@ -5,9 +5,9 @@ These keys shall be stored in a filed named *credentials* located in the ~/.aws 
 The content of the file shall be as follows:
 
 `
-[default]
-aws_access_key_id = <your_access_key_id>
-aws_secret_access_key = <your_secret_access_key>
+  [default]
+  aws_access_key_id = <your_access_key_id>
+  aws_secret_access_key = <your_secret_access_key>
 `
 
 ## Install Docker ##
@@ -21,5 +21,6 @@ aws_secret_access_key = <your_secret_access_key>
 ## Building and launching the Customer service ##
 1. Go to the customerservice module
 2. Build the artifact: *mvn clean install*
-3. Build the docker image: docker build 
+3. Build the docker image: *docker build -t symsoft/customerservice:1 .*
+
 
