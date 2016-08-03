@@ -1,0 +1,271 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "AWS CloudFormation template to create test ECS task and service",
+  "Parameters": {
+    "TeamName": {
+      "Type": "String",
+      "Description": "Name of the team"
+    },
+    "KeyName": {
+      "Type": "AWS::EC2::KeyPair::KeyName",
+      "Description": "Name of an existing EC2 KeyPair to enable SSH access to the EC2 instances"
+    },
+    "ElbHealthCheckTarget": {
+      "Type": "String",
+      "Description": "Optional - Health Check Target for ELB - defaults to HTTP:8080/",
+      "Default": "HTTP:8080/order"
+    }
+  },
+  "Resources": {
+    "ECSCluster": {
+      "Type": "AWS::ECS::Cluster"
+    },
+
+    "ECSStack": {
+      "Type": "AWS::CloudFormation::Stack",
+      "Properties": {
+        "TemplateURL": "https://s3-eu-west-1.amazonaws.com/codecamp2016/cf_ecs_template.json",
+        "TimeoutInMinutes": "60",
+        "Parameters" : {
+          "TeamName" : {"Ref" : "TeamName"},
+          "AZ" : "eu-west-1a,eu-west-1b",
+          "KeyName" : {"Ref" : "KeyName"},
+          "ClusterSize" : "2",
+          "ClusterName" : {"Ref" : "ECSCluster"}
+        }
+      }
+    },
+
+    "OrderServiceLoadBalancer": {
+      "Type": "AWS::ElasticLoadBalancing::LoadBalancer",
+      "DependsOn":"VpcStack",
+      "Properties": {
+        "LoadBalancerName": {
+          "Fn::Join": ["-",
+                       [
+                         {"Ref": "TeamName"},
+                         "OrderServiceLoadBalancer"
+                       ]
+          ]
+        },
+        "SecurityGroups": [
+          {
+            "Fn::GetAtt": [
+              "ECSStack",
+              "Outputs.ElbSecurityGroup"
+            ]
+          }
+        ],
+        "Subnets": [
+          {
+            "Fn::GetAtt": [
+              "ECSStack",
+              "Outputs.PubSubnetAz1"
+            ]
+          },
+          {
+            "Fn::GetAtt": [
+              "ECSStack",
+              "Outputs.PubSubnetAz2"
+            ]
+          }
+        ],
+        "CrossZone": "true",
+        "Listeners": [
+          {
+            "LoadBalancerPort": "80",
+            "InstancePort": "8080",
+            "Protocol": "HTTP"
+          }
+        ],
+        "HealthCheck": {
+          "Target": {
+            "Ref": "ElbHealthCheckTarget"
+          },
+          "HealthyThreshold": "2",
+          "UnhealthyThreshold": "10",
+          "Interval": "30",
+          "Timeout": "5"
+        },
+        "Tags": [
+          {
+            "Key": "Name",
+            "Value": {
+              "Fn::Join": ["-",
+                           [
+                             {"Ref": "TeamName"},
+                             "LoadBalancer"
+                           ]
+              ]
+            }
+
+          }
+        ]
+      }
+    },
+
+
+    "OrderServiceTask":
+    {
+      "Type" : "AWS::ECS::TaskDefinition",
+      "Properties" : {
+        "ContainerDefinitions" : [
+          {
+            "Environment" : [
+              {
+                "Name": "SERVICE_9998_NAME",
+                "Value": "order"
+              },
+              {
+                "Name": "SERVICE_9998_CHECK_HTTP",
+                "Value": "/order"
+              },
+              {
+                "Name": "SERVICE_9998_CHECK_INTERVAL",
+                "Value": "10s"
+              },
+              {
+                "Name": "SERVICE_TAGS",
+                "Value": "http"
+              }
+            ],
+            "Name" : "orderservice",
+            "Image" : "babtist/orderservice",
+            "Memory":200,
+            "PortMappings":[
+              {
+                "ContainerPort" : 9998,
+                "HostPort" : 8080
+              }
+            ],
+            "Essential":true
+          }
+        ]
+      }
+    },
+    "OrderService": {
+      "Type" : "AWS::ECS::Service",
+      "DependsOn" : "ECSStack",
+      "Properties" : {
+        "Cluster" : { "Ref" : "ECSCluster" },
+        "DesiredCount" : 1,
+        "Role" : {"Ref":"ECSServiceRole"},
+        "TaskDefinition" : {"Ref":"OrderServiceTask"},
+        "LoadBalancers": [
+          {
+            "ContainerName": "orderservice",
+            "ContainerPort": "9998",
+            "LoadBalancerName" : { "Ref" : "OrderServiceLoadbalancer" }
+          }
+        ]
+      }
+    },
+    "CustomerServiceTask":
+    {
+      "Type" : "AWS::ECS::TaskDefinition",
+      "Properties" : {
+        "ContainerDefinitions" : [
+          {
+            "Environment" : [
+              {
+                "Name": "SERVICE_9997_NAME",
+                "Value": "customer"
+              },
+              {
+                "Name": "SERVICE_9997_CHECK_HTTP",
+                "Value": "/customer"
+              },
+              {
+                "Name": "SERVICE_9997_CHECK_INTERVAL",
+                "Value": "10s"
+              },
+              {
+                "Name": "SERVICE_TAGS",
+                "Value": "http"
+              }
+            ],
+            "Name" : "customerservice",
+            "Image" : "babtist/customerservice",
+            "Memory":200,
+            "PortMappings":[
+              {
+                "ContainerPort" : 9997,
+                "HostPort" : 8090
+              }
+            ],
+            "Essential":true
+          }
+        ]
+      }
+    },
+    "CustomerService": {
+      "Type" : "AWS::ECS::Service",
+      "DependsOn" : "ECSStack",
+      "Properties" : {
+        "Cluster" : { "Ref" : "ECSCluster" },
+        "DesiredCount" : 1,
+        "TaskDefinition" : {"Ref":"CustomerServiceTask"}
+      }
+    },
+    "ECSServiceRole": {
+      "Type": "AWS::IAM::Role",
+      "Properties": {
+        "AssumeRolePolicyDocument": {
+          "Statement": [
+            {
+              "Effect": "Allow",
+              "Principal": {
+                "Service": [
+                  "ecs.amazonaws.com"
+                ]
+              },
+              "Action": [
+                "sts:AssumeRole"
+              ]
+            }
+          ]
+        },
+        "Path": "/",
+        "Policies": [
+          {
+            "PolicyName": "ecs-service",
+            "PolicyDocument": {
+              "Statement": [
+                {
+                  "Effect": "Allow",
+                  "Action": [
+                    "elasticloadbalancing:Describe*",
+                    "elasticloadbalancing:DeregisterInstancesFromLoadBalancer",
+                    "elasticloadbalancing:RegisterInstancesWithLoadBalancer",
+                    "ec2:Describe*",
+                    "ec2:AuthorizeSecurityGroupIngress"
+                  ],
+                  "Resource": "*"
+                }
+              ]
+            }
+          }
+        ]
+      }
+    }
+  },
+  "Outputs" : {
+    "LoadBalancerURL": {
+      "Description": "Order service loadbalancer DNS name",
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            "http://",
+            {
+              "Fn::GetAtt": [
+                "OrderServiceLoadBalancer",
+                "DNSName"
+              ]
+            }
+          ]
+        ]
+      }
+    }
+  }
+}
