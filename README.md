@@ -12,7 +12,10 @@ aws_secret_access_key = <your_secret_access_key>
 
 ## Install and configure Docker ##
 1. Install [Docker](https://docs.docker.com)
-2. Login to dockerhub. `docker login`
+2. Login to dockerhub. 
+````
+`$ docker login
+````
 
 ## Install AWS CLI ##
 [AWS Command Line Interface](https://aws.amazon.com/cli/)
