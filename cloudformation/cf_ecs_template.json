@@ -534,13 +534,12 @@
     },
     "PubSubnetAz2" : {
       "Value": {
-        "Value": {
           "Fn::GetAtt": [
             "VpcStack",
             "Outputs.PubSubnetAz2"
           ]
         }
-      }
+
     }
 
   }

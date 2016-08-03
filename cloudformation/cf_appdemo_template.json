@@ -130,7 +130,7 @@
               }
             ],
             "Name" : "orderservice",
-            "Image" : "babtist/orderservice",
+            "Image" : "symsoft/orderservice.1",
             "Memory":200,
             "PortMappings":[
               {
@@ -185,7 +185,7 @@
               }
             ],
             "Name" : "customerservice",
-            "Image" : "babtist/customerservice",
+            "Image" : "symsoft/customerservice.1",
             "Memory":200,
             "PortMappings":[
               {
