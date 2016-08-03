@@ -5,7 +5,7 @@ These keys shall be stored in a filed named *credentials* located in the ~/.aws 
 The content of the file shall be as follows:
 
 ````
-  [default]  
+>default]</br>  
   aws_access_key_id = <your_access_key_id>  
   aws_secret_access_key = <your_secret_access_key>
 ````
