@@ -86,11 +86,11 @@ $ docker push <your_dockerhub_name>/customerservice:1
 ````
 5. Register a task definition for the docker image in AWS ECS. Will we do this using the AWS CLI.
 ````
-`$ aws ecs register-task-definition --cli-input-json file://main/src/resources/aws-ecs/taskdefinition.json
+`$ aws ecs register-task-definition --cli-input-json file://src/main/resources/aws-ecs/taskdefinition.json
 ````
 6. Create the service in AWS ECS 
 ````
-$ aws ecs create-service --cluster <your_cluster_name> --service-name CustomerService  --cli-input-json file://main/src/resources/aws-ecs/servicedefinition.json
+$ aws ecs create-service --cluster <your_cluster_name> --service-name CustomerService  --cli-input-json file://src/main/resources/aws-ecs/servicedefinition.json
 ````
 
 ## Building and launching the Order service ##
@@ -109,11 +109,11 @@ $ docker push <your_dockerhub_name>/orderservice:1
 ````
 5. Register a task definition for the docker image in AWS ECS. Will we do this using the AWS CLI.
 ````
-`$ aws ecs register-task-definition --cli-input-json file://main/src/resources/aws-ecs/taskdefinition.json
+`$ aws ecs register-task-definition --cli-input-json file://src/main/resources/aws-ecs/taskdefinition.json
 ````
 6. Create the service in AWS ECS
 ````
-$ aws ecs create-service --cluster <your_cluster_name> --service-name CustomerService  --cli-input-json file://main/src/resources/aws-ecs/servicedefinition.json
+$ aws ecs create-service --cluster <your_cluster_name> --service-name CustomerService  --cli-input-json file://src/main/resources/aws-ecs/servicedefinition.json
 
 ## Verifying that the application is running ##
 First we check that ECS cluster is correctly launched.
