@@ -1,0 +1,7 @@
+{
+  "serviceName": "CustomerService",
+  "taskDefinition": "<TeamName>-CustomerServiceTask",
+  "desiredCount": 1
+}
+
+

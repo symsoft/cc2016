@@ -1,0 +1,35 @@
+{
+  "containerDefinitions" : [
+    {
+      "environment" : [
+        {
+          "name": "SERVICE_9998_NAME",
+          "value": "order"
+        },
+        {
+          "name": "SERVICE_9998_CHECK_HTTP",
+          "value": "/order"
+        },
+        {
+          "name": "SERVICE_9998_CHECK_INTERVAL",
+          "value": "10s"
+        },
+        {
+          "name": "SERVICE_TAGS",
+          "value": "http"
+        }
+      ],
+      "name" : "orderservice",
+      "image" : "symsoft/orderservice:3",
+      "memory":200,
+      "portMappings":[
+        {
+          "containerPort" : 9998,
+          "hostPort" : 8080
+        }
+      ],
+      "essential":true
+    }
+  ],
+  "family":"OrderServiceTask"
+}

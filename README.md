@@ -12,6 +12,7 @@ aws_secret_access_key = <your_secret_access_key>
 
 ## Install and configure Docker ##
 1. Install [Docker](https://docs.docker.com)
+2. Create a [DockerHub](https://hub.docker.com) account
 2. Login to dockerhub. 
 ````
 $ docker login
@@ -23,7 +24,7 @@ $ docker login
 # Create the AWS infrastructure stack #
 In order to run our microservice application demo we need an infrastructure stack to run on. We will use AWS Cloudformation to create the stack. The Cloudformation templates to create the stack are available in this repository but they have also been stored in an AWS S3 bucket.
 
-1. First login to the AWS management console using your username and password. In order to do that you need to know the Symsoft's AWS account id (Ask someone how nows, if you don't know :-))). 
+1. First login to the AWS management console using your username and password. In order to do that you need to know your AWS account id (Ask someone how nows, if you don't know :-))). 
 You login [here](https://aws.amazon.com/)  
 
 2. Select the *EC2 Container Service*

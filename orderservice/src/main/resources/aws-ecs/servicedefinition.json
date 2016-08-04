@@ -1,0 +1,13 @@
+{
+  "serviceName": "OrderService",
+  "taskDefinition": "OrderServiceTask",
+  "loadBalancers": [
+    {
+      "loadBalancerName": "<TeamName>-LoadBalancer",
+      "containerName": "orderservice",
+      "containerPort": 9998
+    }
+  ],
+  "desiredCount": 1,
+  "role": "/ecsServiceRole"
+}

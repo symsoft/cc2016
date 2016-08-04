@@ -16,7 +16,7 @@ import java.net.URISyntaxException;
 
 public class CustomerApi {
     private static final String CUSTOMER_SERVICE_URL = "http://customer.service.consul:8090";
-    private static final String CUSTOMER_PATH = "/customer";
+    private static final String CUSTOMER_PATH = "customer";
 
     private static CustomerApi instance;
     private final URI uri;
@@ -42,7 +42,7 @@ public class CustomerApi {
 
     public void getCustomerInfo(String userName, CustomerInfoCallback callback) {
 
-        WebTarget webTarget = createNewWebTarget().path(CUSTOMER_PATH + userName);
+        WebTarget webTarget = createNewWebTarget().path(CUSTOMER_PATH + "/"+userName);
         webTarget.request().accept(MediaType.APPLICATION_JSON_TYPE).buildGet().submit(new InvocationCallback<CustomerData>() {
             public void completed(CustomerData customerData) {
                 callback.completed(customerData);
