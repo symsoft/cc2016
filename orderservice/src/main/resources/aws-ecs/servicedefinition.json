@@ -1,6 +1,6 @@
 {
   "serviceName": "OrderService",
-  "taskDefinition": "OrderServiceTask",
+  "taskDefinition": "<TeamName>-OrderServiceTask",
   "loadBalancers": [
     {
       "loadBalancerName": "<TeamName>-LoadBalancer",
