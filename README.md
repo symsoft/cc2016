@@ -113,7 +113,7 @@ $ docker push <your_dockerhub_name>/orderservice:1
 ````
 6. Create the service in AWS ECS
 ````
-$ aws ecs create-service --cluster <your_cluster_name> --service-name CustomerService  --cli-input-json file://src/main/resources/aws-ecs/servicedefinition.json
+$ aws ecs create-service --cluster <your_cluster_name> --service-name OrderService  --cli-input-json file://src/main/resources/aws-ecs/servicedefinition.json
 
 ## Verifying that the application is running ##
 First we check that ECS cluster is correctly launched.
