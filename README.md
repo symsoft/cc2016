@@ -57,7 +57,7 @@ https://s3-eu-west-1.amazonaws.com/codecamp2016/cf_appdemo_template.json
 
 # Running the demo app #
 ## Adapting the application AWS scripts ##
-The first thing we need to do is to adapt some JSON scripts so that application launches in the ECS cluster that we created earlier.
+The first thing we need to do is to adapt the JSON scripts that will be used to create AWS ECS task defintions and services for our application, so that these are created in the ECS cluster that we created earlier.
 
 1. Locate the file *customerservice/main/resources/aws-ecs/taskdefinition.json*. 
 Replace *<your_dockerhub_name>* with your DockerHub username and replace *<TeamName>* with the team name you entered when creating the infrastructure stack.
@@ -86,5 +86,52 @@ $ docker push <your_dockerhub_name>/customerservice:1
 ````
 6. Create the service in AWS ECS 
 ````
-aws ecs create-service --cluster <your_cluster_name> --service-name CustomerService  --cli-input-json file://main/src/resources/aws-ecs/servicedefinition.json
+$ aws ecs create-service --cluster <your_cluster_name> --service-name CustomerService  --cli-input-json file://main/src/resources/aws-ecs/servicedefinition.json
 ````
+
+## Building and launching the Order service ##
+1. Go to the orderservice module
+2. Build the artifact:
+````
+$ mvn clean install
+````
+3. Build the docker image
+````
+$ docker build -t <your_dockerhub_name>/orderservice:1 .
+````
+4. Push the image
+````
+$ docker push <your_dockerhub_name>/orderservice:1
+````
+5. Register a task definition for the docker image in AWS ECS. Will we do this using the AWS CLI.
+````
+`$ aws ecs register-task-definition --cli-input-json file://main/src/resources/aws-ecs/taskdefinition.json
+````
+6. Create the service in AWS ECS
+````
+$ aws ecs create-service --cluster <your_cluster_name> --service-name CustomerService  --cli-input-json file://main/src/resources/aws-ecs/servicedefinition.json
+
+## Verifying that the application is running ##
+First we check that ECS cluster is correctly launched.
+1. Log in to the AWS console
+2. Select *EC2 Container Service* in the *Services* menu
+3. Select your cluster
+4. Verify that the CustomerService and the OrderService exist
+5. Select the OrderService and verify that there are a task running for the service. Do the same for the CustomerService
+
+Now check that the load balancer
+1. Select *EC2* in the *Services* memu
+2. Click *Load Balancers*
+3. Select your load balancer
+4. Click on the *Instances* tab (in the bottom of the page)
+5. Verify that there is at least on instance that have status *InService*
+6. Click on the *Description* tab and copy the DNS name for the load balancer.
+
+Now we will test to access the application.
+From a command prompt run the following curl command. Replease <your_loadbalancer_dns_name> with the DNS name you copied above.
+````
+$ curl -v -d '{"productId":12,"quantity":1}' -H 'Content-Type:application/json' -H 'Accept:application/json'  Kalle:pw@`<your_loadbalancer_dns_name>/order
+````
+
+
+ 
