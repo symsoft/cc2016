@@ -21,7 +21,7 @@
         }
       ],
       "name" : "customerservice",
-      "image" : "<your_dockerhub_name>/customerservice:3",
+      "image" : "<your_dockerhub_name>/customerservice:1",
       "memory":200,
       "portMappings":[
         {
