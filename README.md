@@ -1,7 +1,7 @@
 # Prerequisites  #
 ## Configure AWS credentials ##
-You need to have you AWS access key id and your AWS secret access key.
-These keys shall be stored in a filed named *credentials* located in the ~/.aws folder.
+You need to have your AWS access key id and your AWS secret access key.
+These keys shall be stored in a file named *credentials* located in the ~/.aws folder.
 The content of the file shall be as follows:
 
 ````
