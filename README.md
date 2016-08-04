@@ -24,37 +24,40 @@ $ docker login
 # Create the AWS infrastructure stack #
 In order to run our microservice application demo we need an infrastructure stack to run on. We will use AWS Cloudformation to create the stack. The Cloudformation templates to create the stack are available in this repository but they have also been stored in an AWS S3 bucket.
 
-1. First login to the AWS management console using your username and password. In order to do that you need to know your AWS account id (Ask someone how nows, if you don't know :-))). 
+Login to the AWS management console using your username and password. In order to do that you need to know your AWS account id (Ask someone how nows, if you don't know :-))). 
 You login [here](https://aws.amazon.com/)  
 
-2. Select the *EC2 Container Service*
+First we need to create an ECS cluster which will be used to run our application.
 
-3. Click *Create Cluster*
+1. In the AWS management console, select the *EC2 Container Service* from the *Services* menu
 
-4. Give your ECS cluster a name and click *Create*
+2. Click *Create Cluster*
 
-5. Next we will create the infrastructure stack using Cloudformation. Select the *CloudFormation* service
+3. Give your ECS cluster a name and click *Create*
 
-6. Click *Create Stack*
+Next we will create the infrastructure stack using Cloudformation. This will create the necessary networking and computing resources that will be need to run the ECS cluster. This includes a VPC, EC2 instances in an auto-scaling group, an Elastic Load Balancer for our service, various security groups and roles needed as well as a [Consul](https://www.consul.io) cluster which is used for service discovery.  
 
-7. Choose the option *Specify an Amazon S3 template URL* and enter the following URL:
+1. Select the *CloudFormation* service
+
+2. Click *Create New Stack*
+
+3. Choose the option *Specify an Amazon S3 template URL* and enter the following URL:
 ````
 https://s3-eu-west-1.amazonaws.com/codecamp2016/cf_appdemo_template.json
 ````
 
-8. Enter stack parameters
+4. Enter stack parameters
    * Stack name: Use for example your name
    * ClusterName: Use same as for stack name
    * KeyName: Select *realtime*
    * TeamName: Use same as for stack name
 
-9. Click next and then next again
+5. Click next and then next again
 
-10. Tick the checkbox *I acknowledge that AWS CloudFormation might create IAM resources* and then click *Create*
+6.  Tick the checkbox *I acknowledge that AWS CloudFormation might create IAM resources* and then click *Create*
 
-11. This will now take a while, so go grab some coffee.  
+7. This will now take a while, so go grab some coffee. You can follow the progress by selecting the *Events* tab at the bottom of the CloudFormation page.  
 
-   
 
 # Running the demo app #
 ## Adapting the application AWS scripts ##
