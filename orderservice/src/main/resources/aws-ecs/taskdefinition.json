@@ -20,7 +20,7 @@
         }
       ],
       "name" : "orderservice",
-      "image" : "symsoft/orderservice:1",
+      "image" : "<your_dockerhub_name>/orderservice:1",
       "memory":200,
       "portMappings":[
         {
