@@ -20,7 +20,7 @@
         }
       ],
       "name" : "orderservice",
-      "image" : "symsoft/orderservice:3",
+      "image" : "symsoft/orderservice:1",
       "memory":200,
       "portMappings":[
         {
@@ -31,5 +31,5 @@
       "essential":true
     }
   ],
-  "family":"OrderServiceTask"
+  "family":"<TeamName>-OrderServiceTask"
 }
