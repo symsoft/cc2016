@@ -63,18 +63,25 @@ https://s3-eu-west-1.amazonaws.com/codecamp2016/cf_appdemo_template.json
 ## Adapting the application AWS scripts ##
 The first thing we need to do is to adapt the JSON scripts that will be used to create AWS ECS task defintions and services for our application, so that these are created in the ECS cluster that we created earlier.
 
-1. Locate the file *customerservice/main/resources/aws-ecs/taskdefinition.json*. 
+1. Locate the file *customerservice/src/main/resources/aws-ecs/taskdefinition.json*. 
 Replace *<your_dockerhub_name>* with your DockerHub username and replace *<TeamName>* with the team name you entered when creating the infrastructure stack.
 
-2. Locate the file *customerservice/main/resources/aws-ecs/servicedefinition.json*. Replace *<TeamName>* with the team name you entered when creating the infrastructure stack.  
+2. Locate the file *customerservice/src/main/resources/aws-ecs/servicedefinition.json*. Replace *<TeamName>* with the team name you entered when creating the infrastructure stack.  
 
-3. Do the same thing for the files *orderservice/main/resources/aws-ecs/taskdefinition.json* and *orderservice/main/resources/aws-ecs/servicedefinition.json*
+3. Do the same thing for the files *orderservice/src/main/resources/aws-ecs/taskdefinition.json* and *orderservice/src/main/resources/aws-ecs/servicedefinition.json*
+
+# Building and launching #
+1. First go to the logutil module
+2. Build the artifact: 
+````
+$ mvn -s ../settings.xml clean install
+````
 
 ## Building and launching the Customer service ##
 1. Go to the customerservice module
 2. Build the artifact: 
 ````
-$ mvn clean install
+$ mvn -s ../settings.xml clean install
 ````
 3. Build the docker image
 ````
@@ -86,7 +93,7 @@ $ docker push <your_dockerhub_name>/customerservice:1
 ````
 5. Register a task definition for the docker image in AWS ECS. Will we do this using the AWS CLI.
 ````
-`$ aws ecs register-task-definition --cli-input-json file://src/main/resources/aws-ecs/taskdefinition.json
+$ aws ecs register-task-definition --cli-input-json file://src/main/resources/aws-ecs/taskdefinition.json
 ````
 6. Create the service in AWS ECS 
 ````
@@ -97,7 +104,7 @@ $ aws ecs create-service --cluster <your_cluster_name> --service-name CustomerSe
 1. Go to the orderservice module
 2. Build the artifact:
 ````
-$ mvn clean install
+$ mvn -s ../settings.xml clean install
 ````
 3. Build the docker image
 ````
@@ -109,12 +116,12 @@ $ docker push <your_dockerhub_name>/orderservice:1
 ````
 5. Register a task definition for the docker image in AWS ECS. Will we do this using the AWS CLI.
 ````
-`$ aws ecs register-task-definition --cli-input-json file://src/main/resources/aws-ecs/taskdefinition.json
+$ aws ecs register-task-definition --cli-input-json file://src/main/resources/aws-ecs/taskdefinition.json
 ````
 6. Create the service in AWS ECS
 ````
 $ aws ecs create-service --cluster <your_cluster_name> --service-name OrderService  --cli-input-json file://src/main/resources/aws-ecs/servicedefinition.json
-
+````
 ## Verifying that the application is running ##
 First we check that ECS cluster is correctly launched.
 1. Log in to the AWS console
