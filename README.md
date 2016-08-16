@@ -1,13 +1,19 @@
 # Prerequisites  #
 ## Configure AWS credentials ##
 You need to have your AWS access key id and your AWS secret access key.
-These keys shall be stored in a file named *credentials* located in the ~/.aws folder.
+These keys shall be stored in a file `~/.aws/credentials`
 The content of the file shall be as follows:
 
 ````
 [default] 
 aws_access_key_id = <your_access_key_id>  
 aws_secret_access_key = <your_secret_access_key>
+````
+
+Also to specify a AWS region, create a file `~/.aws/config` with contents:
+````
+[default] 
+region=eu-west-1
 ````
 
 ## Install and configure Docker ##
