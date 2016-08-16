@@ -130,22 +130,35 @@ $ aws ecs create-service --cluster <your_cluster_name> --service-name OrderServi
 ````
 ## Verifying that the application is running ##
 First we check that ECS cluster is correctly launched.
+
 1. Log in to the AWS console
+
 2. Select *EC2 Container Service* in the *Services* menu
+
 3. Select your cluster
+
 4. Verify that the CustomerService and the OrderService exist
+
 5. Select the OrderService and verify that there are a task running for the service. Do the same for the CustomerService
 
 Now check that the load balancer
+
 1. Select *EC2* in the *Services* memu
+
 2. Click *Load Balancers*
+
 3. Select your load balancer
+
 4. Click on the *Instances* tab (in the bottom of the page)
+
 5. Verify that there is at least on instance that have status *InService*
+
 6. Click on the *Description* tab and copy the DNS name for the load balancer.
 
 Now we will test to access the application.
+
 From a command prompt run the following curl command. Replease <your_loadbalancer_dns_name> with the DNS name you copied above.
+
 ````
 $ curl -v -d '{"productId":12,"quantity":1}' -H 'Content-Type:application/json' -H 'Accept:application/json'  Kalle:pw@<your_loadbalancer_dns_name>/order
 ````
