@@ -147,7 +147,7 @@ Now check that the load balancer
 Now we will test to access the application.
 From a command prompt run the following curl command. Replease <your_loadbalancer_dns_name> with the DNS name you copied above.
 ````
-$ curl -v -d '{"productId":12,"quantity":1}' -H 'Content-Type:application/json' -H 'Accept:application/json'  Kalle:pw@&lt;your_loadbalancer_dns_name&gt;/order
+$ curl -v -d '{"productId":12,"quantity":1}' -H 'Content-Type:application/json' -H 'Accept:application/json'  Kalle:pw@<your_loadbalancer_dns_name>/order
 ````
 
 
