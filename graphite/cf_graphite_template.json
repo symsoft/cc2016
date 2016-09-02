@@ -1,0 +1,192 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Description": "AWS CloudFormation template to create a Graphana and Graphite service",
+  "Parameters": {
+    "Vpc" : {
+      "Type" : "AWS::EC2::VPC::Id",
+      "Description": "The VPC to use"
+    },
+    "SubNet1": {
+      "Type" : "AWS::EC2::Subnet::Id",
+      "Description": "The first subnet to use"
+    },
+    "SubNet2": {
+      "Type" : "AWS::EC2::Subnet::Id",
+      "Description": "The second subnet to use"
+    },
+    "SecurityGroup": {
+      "Type" : "AWS::EC2::SecurityGroup::Id",
+      "Description": "An existing security group used by the ECS instances"
+    },
+    "ECSClusterName": {
+      "Type": "String",
+      "Description": "Name of an existing ECS cluster",
+      "Default" : "Graphite"
+    }
+  },
+  "Resources": {
+    "GraphanaElbSecurityGroup": {
+      "Type": "AWS::EC2::SecurityGroup",
+      "Properties": {
+        "GroupDescription": "Graphana ELB Allowed Ports",
+        "VpcId": { "Ref" : "Vpc"},
+        "SecurityGroupIngress": [
+          {
+            "IpProtocol": "tcp",
+            "FromPort": "80",
+            "ToPort": "80",
+            "CidrIp": "0.0.0.0/0"
+          }
+        ]
+      }
+    },
+
+
+    "GraphanaLoadBalancer": {
+      "Type": "AWS::ElasticLoadBalancing::LoadBalancer",
+      "Properties": {
+        "LoadBalancerName": "GraphanaLoadBalancer",
+        "SecurityGroups": [{"Ref" : "GraphanaElbSecurityGroup"}],
+        "Subnets": [
+          {"Ref" : "SubNet1"},
+          {"Ref" : "SubNet2"}
+        ],
+        "CrossZone": "true",
+        "Listeners": [
+          {
+            "LoadBalancerPort": "80",
+            "InstancePort": "3000",
+            "Protocol": "HTTP"
+          }
+        ],
+        "HealthCheck": {
+          "Target": "HTTP:3000/",
+          "HealthyThreshold": "2",
+          "UnhealthyThreshold": "10",
+          "Interval": "30",
+          "Timeout": "5"
+        }
+      }
+    },
+    "GraphiteTask":
+    {
+      "Type" : "AWS::ECS::TaskDefinition",
+      "Properties" : {
+        "ContainerDefinitions" : [
+          {
+            "Name" : "graphite",
+            "Environment" : [
+              {
+                "Name": "SERVICE_2003_NAME",
+                "Value": "graphite"
+              },
+              {
+                "Name": "SERVICE_2003_CHECK_TCP",
+                "Value": "true"
+              },
+              {
+                "Name": "SERVICE_2003_CHECK_INTERVAL",
+                "Value": "10s"
+              },
+              {
+                "Name": "SERVICE_TAGS",
+                "Value": "tcp"
+              }
+            ],
+            "Image" : "samsaffron/graphite",
+            "Memory":200,
+            "PortMappings":[
+              {
+                "ContainerPort" : 80,
+                "HostPort" : 80
+              },
+              {
+                "ContainerPort" : 3000,
+                "HostPort" : 3000
+              },
+              {
+                "ContainerPort" : 2003,
+                "HostPort" : 2003
+              },
+              {
+                "ContainerPort" : 2004,
+                "HostPort" : 2004
+              },
+              {
+                "ContainerPort" : 7002,
+                "HostPort" : 7002
+              }
+            ],
+            "MountPoints" : [
+              {
+                "SourceVolume" : "graphite-vol",
+                "ContainerPath" : "/data"
+              }
+            ],
+
+            "Essential":true
+          }
+        ],
+        "Volumes": [
+          {
+            "Host": {
+              "SourcePath": "/data/graphite/"
+            },
+            "Name": "graphite-vol"
+          }]
+      }
+    },
+    "GraphiteService": {
+      "Type" : "AWS::ECS::Service",
+      "Properties" : {
+        "Cluster" : { "Ref" : "ECSClusterName" },
+        "DesiredCount" : 1,
+        "Role" : "/ecsServiceRole",
+        "TaskDefinition" : {"Ref":"GraphiteTask"},
+        "LoadBalancers": [
+          {
+            "ContainerName": "graphite",
+            "ContainerPort": "3000",
+            "LoadBalancerName" : { "Ref" : "GraphanaLoadBalancer" }
+          }
+        ]
+      }
+    },
+
+    "GraphiteProtocol": {
+      "Type": "AWS::EC2::SecurityGroupIngress",
+      "Properties": {
+        "GroupId": {
+          "Ref": "SecurityGroup"
+        },
+        "IpProtocol": "tcp",
+        "FromPort": "2003",
+        "ToPort": "2003",
+        "SourceSecurityGroupId": {
+          "Ref": "SecurityGroup"
+        }
+      }
+    }
+  },
+
+
+  "Outputs" : {
+    "GraphanaLoadBalancerURL": {
+      "Description": "Graphana loadbalancer DNS name",
+      "Value": {
+        "Fn::Join": [
+          "",
+          [
+            "http://",
+            {
+              "Fn::GetAtt": [
+                "GraphanaLoadBalancer",
+                "DNSName"
+              ]
+            }
+          ]
+        ]
+      }
+    }
+  }
+}

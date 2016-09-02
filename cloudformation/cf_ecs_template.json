@@ -102,7 +102,7 @@
         "SecurityGroupIngress": [
           {
             "IpProtocol": "tcp",
-            "FromPort": "8090",
+            "FromPort": "8000",
             "ToPort": "9999",
             "SourceSecurityGroupId": {
               "Fn::GetAtt": [
@@ -113,8 +113,8 @@
           },
           {
             "IpProtocol": "tcp",
-            "FromPort": "8080",
-            "ToPort": "8089",
+            "FromPort": "8000",
+            "ToPort": "9999",
             "SourceSecurityGroupId": {
               "Ref" : "ElbSecurityGroup"
             }
